@@ -13,6 +13,14 @@ def generate_launch_description():
   vehicleY = LaunchConfiguration('vehicleY')
   checkTerrainConn = LaunchConfiguration('checkTerrainConn')
   
+  # --- UNIFIED COORDINATE FRAME CONFIGURATIONS ---
+  odom_frame = LaunchConfiguration('odom_frame')
+  robot_frame = LaunchConfiguration('robot_frame')
+  
+  declare_odom_frame = DeclareLaunchArgument('odom_frame', default_value='map', description='Robot starting point frame')
+  declare_sensor_frame = DeclareLaunchArgument('robot_frame', default_value='sensor', description='Base link base frame tracking')
+  # -----------------------------------------------
+
   declare_cameraOffsetZ = DeclareLaunchArgument('cameraOffsetZ', default_value='0.0', description='')
   declare_vehicleX = DeclareLaunchArgument('vehicleX', default_value='0.0', description='')
   declare_vehicleY = DeclareLaunchArgument('vehicleY', default_value='0.0', description='')
@@ -26,13 +34,17 @@ def generate_launch_description():
       'cameraOffsetZ': cameraOffsetZ,
       'goalX': vehicleX,
       'goalY': vehicleY,
+      'sensor_frame': robot_frame
     }.items()
   )
 
   start_terrain_analysis = IncludeLaunchDescription(
     FrontendLaunchDescriptionSource(os.path.join(
       get_package_share_directory('terrain_analysis'), 'launch', 'terrain_analysis.launch')
-    )
+    ), 
+    launch_arguments={
+      'map_frame': odom_frame
+    }.items()
   )
 
   start_terrain_analysis_ext = IncludeLaunchDescription(
@@ -41,19 +53,30 @@ def generate_launch_description():
     ),
     launch_arguments={
       'checkTerrainConn': checkTerrainConn,
+      'map_frame': odom_frame
     }.items()
   )
 
+  # Updated to supply the unified parent frame to the generator pipeline
   start_sensor_scan_generation = IncludeLaunchDescription(
     FrontendLaunchDescriptionSource(os.path.join(
       get_package_share_directory('sensor_scan_generation'), 'launch', 'sensor_scan_generation.launch')
-    )
+    ),
+    launch_arguments={
+      'parentFrameId': odom_frame,
+      'childFrameId': 'sensor_at_scan' # Keeps its unique leaf identifier name under robot_init
+    }.items()
   )
 
+  # Updated to inject unified frames into the LOAM module mapping pipeline
   start_loam_interface = IncludeLaunchDescription(
     FrontendLaunchDescriptionSource(os.path.join(
       get_package_share_directory('loam_interface'), 'launch', 'loam_interface.launch')
-    )
+    ),
+    launch_arguments={
+      'parentFrameId': odom_frame,
+      'childFrameId': robot_frame
+    }.items()
   )
 
   start_joy = Node(
@@ -65,7 +88,7 @@ def generate_launch_description():
                 'dev': "/dev/input/js0",
                 'deadzone': 0.12,
                 'autorepeat_rate': 0.0,
-  		}]
+ 		}]
   )
 
   rviz_config_file = os.path.join(get_package_share_directory('vehicle_simulator'), 'rviz', 'vehicle_simulator.rviz')
@@ -85,12 +108,15 @@ def generate_launch_description():
 
   ld = LaunchDescription()
 
-  # Add the actions
+  # Add declarations
+  ld.add_action(declare_odom_frame)
+  ld.add_action(declare_sensor_frame)
   ld.add_action(declare_cameraOffsetZ)
   ld.add_action(declare_vehicleX)
   ld.add_action(declare_vehicleY)
   ld.add_action(declare_checkTerrainConn)
 
+  # Add nodes
   ld.add_action(start_local_planner)
   ld.add_action(start_terrain_analysis)
   ld.add_action(start_terrain_analysis_ext)

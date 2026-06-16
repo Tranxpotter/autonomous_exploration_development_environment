@@ -674,6 +674,7 @@ int main(int argc, char** argv)
       float sinVehicleYaw = sin(vehicleYaw);
       float cosVehicleYaw = cos(vehicleYaw);
 
+      // ======= Filter Point Clouds by boundaries + transform PC to vehicle frame =======
       pcl::PointXYZI point;
       plannerCloudCrop->clear();
       int plannerCloudSize = plannerCloud->points.size();

@@ -1,8 +1,10 @@
 <launch>
 
   <arg name="checkTerrainConn" default="false"/>
+  <arg name="map_frame" default="map" />
 
   <node pkg="terrain_analysis_ext" exec="terrainAnalysisExt" name="terrainAnalysisExt" output="screen">
+    <param name="map_frame" value="$(var map_frame)" />
     <param name="scanVoxelSize" value="0.1" />
     <param name="decayTime" value="10.0" />
     <param name="noDecayDis" value="0.0" />

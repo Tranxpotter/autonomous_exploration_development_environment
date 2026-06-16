@@ -1,11 +1,13 @@
 <launch>
+  <arg name="map_frame" default="map" />
 
   <node pkg="terrain_analysis" exec="terrainAnalysis" name="terrainAnalysis" output="screen">
-    <param name="scanVoxelSize" value="0.05" />
+    <param name="map_frame" value="$(var map_frame)" />
+    <param name="scanVoxelSize" value="0.1" />
     <param name="decayTime" value="2.0" />
-    <param name="noDecayDis" value="4.0" />
+    <param name="noDecayDis" value="1.0" />
     <param name="clearingDis" value="8.0" />
-    <param name="useSorting" value="false" />
+    <param name="useSorting" value="true" />
     <param name="quantileZ" value="0.25" />
     <param name="considerDrop" value="true" />
     <param name="limitGroundLift" value="false" />

@@ -35,6 +35,7 @@ using namespace std;
 
 const double PI = 3.1415926;
 
+std::string map_frame = "map";
 double scanVoxelSize = 0.1;
 double decayTime = 10.0;
 double noDecayDis = 0;
@@ -178,6 +179,8 @@ int main(int argc, char** argv)
   rclcpp::init(argc, argv);
   auto nh = rclcpp::Node::make_shared("terrainAnalysisExt");
 
+  nh->declare_parameter<std::string>("map_frame", map_frame);
+
   nh->declare_parameter<double>("scanVoxelSize", scanVoxelSize);
   nh->declare_parameter<double>("decayTime", decayTime);
   nh->declare_parameter<double>("noDecayDis", noDecayDis);
@@ -196,6 +199,7 @@ int main(int argc, char** argv)
   nh->declare_parameter<double>("ceilingFilteringThre", ceilingFilteringThre);
   nh->declare_parameter<double>("localTerrainMapRadius", localTerrainMapRadius);
 
+  nh->get_parameter("map_frame", map_frame);
   nh->get_parameter("scanVoxelSize", scanVoxelSize);
   nh->get_parameter("decayTime", decayTime);
   nh->get_parameter("noDecayDis", noDecayDis);
@@ -556,7 +560,7 @@ int main(int argc, char** argv)
       sensor_msgs::msg::PointCloud2 terrainCloud2;
       pcl::toROSMsg(*terrainCloudElev, terrainCloud2);
       terrainCloud2.header.stamp = rclcpp::Time(static_cast<uint64_t>(laserCloudTime * 1e9));
-      terrainCloud2.header.frame_id = "map";
+      terrainCloud2.header.frame_id = map_frame;
       pubTerrainCloud->publish(terrainCloud2);
     }
 
