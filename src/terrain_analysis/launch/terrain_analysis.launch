@@ -5,7 +5,7 @@
     <param name="map_frame" value="$(var map_frame)" />
     <param name="scanVoxelSize" value="0.1" />
     <param name="decayTime" value="2.0" />
-    <param name="noDecayDis" value="1.0" />
+    <param name="noDecayDis" value="0.6" />
     <param name="clearingDis" value="8.0" />
     <param name="useSorting" value="true" />
     <param name="quantileZ" value="0.35" />
