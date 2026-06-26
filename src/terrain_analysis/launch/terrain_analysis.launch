@@ -8,7 +8,7 @@
     <param name="noDecayDis" value="0.6" />
     <param name="clearingDis" value="8.0" />
     <param name="useSorting" value="true" />
-    <param name="quantileZ" value="0.35" />
+    <param name="quantileZ" value="0.1" />
     <param name="considerDrop" value="true" />
     <param name="limitGroundLift" value="false" />
     <param name="maxGroundLift" value="0.15" />
