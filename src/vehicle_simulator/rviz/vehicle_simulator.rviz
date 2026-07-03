@@ -12,7 +12,8 @@ Panels:
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
-    Expanded: ~
+    Expanded:
+      - /Waypoint1
     Name: Tool Properties
     Splitter Ratio: 0.5886790156364441
   - Class: rviz_common/Views
@@ -420,6 +421,7 @@ Visualization Manager:
   Tools:
     - Class: rviz_default_plugins/MoveCamera
     - Class: waypoint_rviz_plugin/WaypointTool
+      Odom Frame: camera_init
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -433,16 +435,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 8.16366195678711
+      Distance: 19.528902053833008
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.0184097308665514
-        Y: 0.06262734532356262
-        Z: 0.04017059504985809
+        X: -0.07249411940574646
+        Y: -0.14037415385246277
+        Z: 0.040150776505470276
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false

@@ -5,6 +5,7 @@
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/logging.hpp>
 #include <rviz_common/properties/string_property.hpp>
+#include <rviz_common/properties/tf_frame_property.hpp>
 #include <rviz_common/properties/qos_profile_property.hpp>
 
 namespace waypoint_rviz_plugin
@@ -15,10 +16,19 @@ WaypointTool::WaypointTool()
   shortcut_key_ = 'w';
 
   topic_property_ = new rviz_common::properties::StringProperty("Topic", "waypoint", "The topic on which to publish navigation waypionts.",
-                                       getPropertyContainer(), SLOT(updateTopic()), this);
+                                      getPropertyContainer(), SLOT(updateTopic()), this);
   
   qos_profile_property_ = new rviz_common::properties::QosProfileProperty(
     topic_property_, qos_profile_);
+  
+  odom_frame_property_ = new rviz_common::properties::TfFrameProperty(
+    "Odom Frame", 
+    odom_frame_.c_str(), 
+    "Name of the Odom Frame",
+    getPropertyContainer()
+  );
+
+  connect(odom_frame_property_, SIGNAL(changed()), this, SLOT(updateFrame()));
 }
 
 WaypointTool::~WaypointTool() = default;
@@ -28,6 +38,7 @@ void WaypointTool::onInitialize()
   rviz_default_plugins::tools::PoseTool::onInitialize();
   qos_profile_property_->initialize(
     [this](rclcpp::QoS profile) {this->qos_profile_ = profile;});
+  odom_frame_property_->setFrameManager(context_->getFrameManager());
   setName("Waypoint");
   updateTopic();
   vehicle_z = 0;
@@ -42,6 +53,11 @@ void WaypointTool::updateTopic()
   pub_ = raw_node->template create_publisher<geometry_msgs::msg::PointStamped>("/way_point", qos_profile_);
   pub_joy_ = raw_node->template create_publisher<sensor_msgs::msg::Joy>("/joy", qos_profile_);
   clock_ = raw_node->get_clock();
+}
+
+void WaypointTool::updateFrame()
+{
+  odom_frame_ = odom_frame_property_->getFrameStd();
 }
 
 void WaypointTool::odomHandler(const nav_msgs::msg::Odometry::ConstSharedPtr odom)
@@ -79,7 +95,7 @@ void WaypointTool::onPoseSet(double x, double y, double theta)
   pub_joy_->publish(joy);
 
   geometry_msgs::msg::PointStamped waypoint;
-  waypoint.header.frame_id = "map";
+  waypoint.header.frame_id = odom_frame_;
   waypoint.header.stamp = joy.header.stamp;
   waypoint.point.x = x;
   waypoint.point.y = y;

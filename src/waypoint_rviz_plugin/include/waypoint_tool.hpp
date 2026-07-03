@@ -5,6 +5,7 @@
 #include <QObject>
 
 #include <sstream>
+#include <string>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/qos.hpp>
 
@@ -15,6 +16,7 @@
 
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/properties/string_property.hpp>
+#include <rviz_common/properties/tf_frame_property.hpp>
 #include <rviz_common/tool.hpp>
 
 namespace rviz_common
@@ -45,6 +47,7 @@ protected:
 
 private Q_SLOTS:
   void updateTopic();
+  void updateFrame();
 
 private:
   float vehicle_z;
@@ -56,6 +59,9 @@ private:
   
   rviz_common::properties::StringProperty * topic_property_;
   rviz_common::properties::QosProfileProperty * qos_profile_property_;
+  rviz_common::properties::TfFrameProperty * odom_frame_property_;
+
+  std::string odom_frame_ = "map";
 
   rclcpp::QoS qos_profile_;
 };
