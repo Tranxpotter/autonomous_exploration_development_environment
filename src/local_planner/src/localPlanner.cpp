@@ -22,8 +22,11 @@
 #include <sensor_msgs/msg/imu.h>
 
 #include "tf2/transform_datatypes.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -84,6 +87,7 @@ double joyToCheckObstacleDelay = 5.0;
 double goalClearRange = 0.5;
 double goalX = 0;
 double goalY = 0;
+string odom_frame = "map";
 
 float joySpeed = 0;
 float joySpeedRaw = 0;
@@ -244,10 +248,32 @@ void joystickHandler(const sensor_msgs::msg::Joy::ConstSharedPtr joy)
   }
 }
 
+std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
 void goalHandler(const geometry_msgs::msg::PointStamped::ConstSharedPtr goal)
 {
-  goalX = goal->point.x;
-  goalY = goal->point.y;
+  std::string goal_frame = goal->header.frame_id;
+  if (goal_frame == odom_frame) {
+    goalX = goal->point.x;
+    goalY = goal->point.y;
+    return;
+  }
+  geometry_msgs::msg::TransformStamped transform_stamped;
+  try {
+    transform_stamped = tf_buffer_->lookupTransform(odom_frame, goal_frame, tf2::TimePointZero);
+
+    geometry_msgs::msg::PointStamped transformed_goal;
+    tf2::doTransform(*goal, transformed_goal, transform_stamped);
+
+    goalX = transformed_goal.point.x;
+    goalY = transformed_goal.point.y;
+    // Debugging use
+    RCLCPP_INFO(nh->get_logger(), "Received goal: frame-%s x-%f y-%f  Transformed goal: x-%f y-%f", goal_frame.c_str(), goal->point.x, goal->point.y, goalX, goalY);
+  } catch (const tf2::TransformException & ex) {
+    RCLCPP_ERROR(nh->get_logger(), "Failed to transform goal from %s to %s: %s",
+                 goal_frame.c_str(), odom_frame.c_str(), ex.what());
+    goalX = goal->point.x;
+    goalY = goal->point.y;
+  }
 }
 
 void speedHandler(const std_msgs::msg::Float32::ConstSharedPtr speed)
@@ -541,6 +567,7 @@ int main(int argc, char** argv)
   nh->declare_parameter<double>("goalClearRange", goalClearRange);
   nh->declare_parameter<double>("goalX", goalX);
   nh->declare_parameter<double>("goalY", goalY);
+  nh->declare_parameter<std::string>("odom_frame", odom_frame);
 
   nh->get_parameter("pathFolder", pathFolder);
   nh->get_parameter("vehicleLength", vehicleLength);
@@ -581,6 +608,7 @@ int main(int argc, char** argv)
   nh->get_parameter("goalClearRange", goalClearRange);
   nh->get_parameter("goalX", goalX);
   nh->get_parameter("goalY", goalY);
+  nh->get_parameter("odom_frame", odom_frame);
 
   auto subOdometry = nh->create_subscription<nav_msgs::msg::Odometry>("/state_estimation", 5, odometryHandler);
 
@@ -589,6 +617,9 @@ int main(int argc, char** argv)
   auto subTerrainCloud = nh->create_subscription<sensor_msgs::msg::PointCloud2>("/terrain_map", 5, terrainCloudHandler);
 
   auto subJoystick = nh->create_subscription<sensor_msgs::msg::Joy>("/joy", 5, joystickHandler);
+
+  tf_buffer_ = std::make_unique<tf2_ros::Buffer>(nh->get_clock());
+  auto tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
   auto subGoal = nh->create_subscription<geometry_msgs::msg::PointStamped> ("/way_point", 5, goalHandler);
 

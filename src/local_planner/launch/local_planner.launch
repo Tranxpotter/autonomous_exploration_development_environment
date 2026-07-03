@@ -10,6 +10,7 @@
   <arg name="joyToSpeedDelay" default="2.0"/>
   <arg name="goalX" default="0.0"/>
   <arg name="goalY" default="0.0"/>
+  <arg name="odom_frame" default="map"/>
 
   <arg name="sensor_frame" default="sensor"/>
 
@@ -53,6 +54,7 @@
     <param name="goalClearRange" value="0.5" />
     <param name="goalX" value="$(var goalX)" />
     <param name="goalY" value="$(var goalY)" />
+    <param name="odom_frame" value="$(var odom_frame)" />
   </node>
 
   <node pkg="local_planner" exec="pathFollower" name="pathFollower" output="screen">

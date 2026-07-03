@@ -5,8 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /FreePaths1
-        - /Trajectory1
+        - /Axes1
       Splitter Ratio: 0.4793578088283539
     Tree Height: 685
   - Class: rviz_common/Selection
@@ -412,6 +411,13 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz_default_plugins/Axes
+      Enabled: true
+      Length: 1
+      Name: Axes
+      Radius: 0.10000000149011612
+      Reference Frame: <Fixed Frame>
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -421,7 +427,7 @@ Visualization Manager:
   Tools:
     - Class: rviz_default_plugins/MoveCamera
     - Class: waypoint_rviz_plugin/WaypointTool
-      Odom Frame: camera_init
+      Odom Frame: robot_init
       Topic:
         Depth: 5
         Durability Policy: Volatile

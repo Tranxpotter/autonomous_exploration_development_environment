@@ -34,6 +34,7 @@ def generate_launch_description():
       'cameraOffsetZ': cameraOffsetZ,
       'goalX': vehicleX,
       'goalY': vehicleY,
+      'odom_frame': odom_frame, 
       'sensor_frame': robot_frame
     }.items()
   )
