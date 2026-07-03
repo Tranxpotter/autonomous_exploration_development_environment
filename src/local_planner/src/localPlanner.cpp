@@ -267,7 +267,7 @@ void goalHandler(const geometry_msgs::msg::PointStamped::ConstSharedPtr goal)
     goalX = transformed_goal.point.x;
     goalY = transformed_goal.point.y;
     // Debugging use
-    RCLCPP_INFO(nh->get_logger(), "Received goal: frame-%s x-%f y-%f  Transformed goal: x-%f y-%f", goal_frame.c_str(), goal->point.x, goal->point.y, goalX, goalY);
+    // RCLCPP_INFO(nh->get_logger(), "Received goal: frame-%s x-%f y-%f  Transformed goal: x-%f y-%f", goal_frame.c_str(), goal->point.x, goal->point.y, goalX, goalY);
   } catch (const tf2::TransformException & ex) {
     RCLCPP_ERROR(nh->get_logger(), "Failed to transform goal from %s to %s: %s",
                  goal_frame.c_str(), odom_frame.c_str(), ex.what());
