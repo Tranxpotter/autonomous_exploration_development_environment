@@ -2,17 +2,19 @@
 
   <arg name="parentFrameId" default="map" />
   <arg name="childFrameId" default="sensor" />
+  <arg name="odomTopic" default="/integrated_to_init" />
+  <arg name="cloudTopic" default="/velodyne_cloud_registered" />
 
   <node pkg="loam_interface" exec="loamInterface" name="loamInterface" output="screen">
 
-    <param name="stateEstimationTopic" value="/robot_odom" />
-    <param name="registeredScanTopic" value="/cloud_registered_corrected" />
+    <param name="stateEstimationTopic" value="$(var odomTopic)" />
+    <param name="registeredScanTopic" value="$(var cloudTopic)" />
 
     <param name="parentFrameId" value="$(var parentFrameId)" />
     <param name="childFrameId" value="$(var childFrameId)" />
     <param name="flipStateEstimation" value="false" />
     <param name="flipRegisteredScan" value="false" />
-    <param name="sendTF" value="true" />
+    <param name="sendTF" value="false" />
     <param name="reverseTF" value="false" />
   </node>
 

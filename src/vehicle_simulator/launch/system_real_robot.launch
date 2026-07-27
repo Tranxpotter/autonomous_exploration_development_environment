@@ -16,9 +16,13 @@ def generate_launch_description():
   # --- UNIFIED COORDINATE FRAME CONFIGURATIONS ---
   odom_frame = LaunchConfiguration('odom_frame')
   robot_frame = LaunchConfiguration('robot_frame')
+  odom_topic = LaunchConfiguration("odom_topic")
+  cloud_topic = LaunchConfiguration("cloud_topic")
   
   declare_odom_frame = DeclareLaunchArgument('odom_frame', default_value='map', description='Robot starting point frame')
   declare_sensor_frame = DeclareLaunchArgument('robot_frame', default_value='sensor', description='Base link base frame tracking')
+  declare_odom_topic = DeclareLaunchArgument('odom_topic', default_value="/Odometry", description="Odometry topic name")
+  declare_cloud_topic = DeclareLaunchArgument("cloud_topic", default_value="/cloud_registered_corrected", description="Point cloud input topic name")
   # -----------------------------------------------
 
   declare_cameraOffsetZ = DeclareLaunchArgument('cameraOffsetZ', default_value='0.0', description='')
@@ -76,7 +80,9 @@ def generate_launch_description():
     ),
     launch_arguments={
       'parentFrameId': odom_frame,
-      'childFrameId': robot_frame
+      'childFrameId': robot_frame, 
+      'odomTopic': odom_topic, 
+      'cloudTopic': cloud_topic
     }.items()
   )
 
@@ -112,6 +118,8 @@ def generate_launch_description():
   # Add declarations
   ld.add_action(declare_odom_frame)
   ld.add_action(declare_sensor_frame)
+  ld.add_action(declare_odom_topic)
+  ld.add_action(declare_cloud_topic)
   ld.add_action(declare_cameraOffsetZ)
   ld.add_action(declare_vehicleX)
   ld.add_action(declare_vehicleY)
