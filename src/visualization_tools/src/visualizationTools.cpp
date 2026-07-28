@@ -35,8 +35,9 @@ using namespace std;
 
 const double PI = 3.1415926;
 
-string metricFile;
-string trajFile;
+string root_dir = PKG_DIR;
+string metricFile = root_dir + "log/";
+string trajFile = root_dir + "log/";
 string mapFile;
 double overallMapVoxelSize = 0.5;
 double exploredAreaVoxelSize = 0.3;
@@ -222,8 +223,6 @@ int main(int argc, char** argv)
   rclcpp::init(argc, argv);
   auto nh = rclcpp::Node::make_shared("visualizationTools");
 
-  nh->declare_parameter<std::string>("metricFile", metricFile);
-  nh->declare_parameter<std::string>("trajFile", trajFile);
   nh->declare_parameter<std::string>("mapFile", mapFile);
   nh->declare_parameter<double>("overallMapVoxelSize", overallMapVoxelSize);
   nh->declare_parameter<double>("exploredAreaVoxelSize", exploredAreaVoxelSize);
@@ -233,8 +232,6 @@ int main(int argc, char** argv)
   nh->declare_parameter<int>("overallMapDisplayInterval", overallMapDisplayInterval);
   nh->declare_parameter<int>("exploredAreaDisplayInterval", exploredAreaDisplayInterval);
 
-  nh->get_parameter("metricFile", metricFile);
-  nh->get_parameter("trajFile", trajFile);
   nh->get_parameter("mapFile", mapFile);
   nh->get_parameter("overallMapVoxelSize", overallMapVoxelSize);
   nh->get_parameter("exploredAreaVoxelSize", exploredAreaVoxelSize);
@@ -243,10 +240,6 @@ int main(int argc, char** argv)
   nh->get_parameter("yawInterval", yawInterval);
   nh->get_parameter("overallMapDisplayInterval", overallMapDisplayInterval);
   nh->get_parameter("exploredAreaDisplayInterval", exploredAreaDisplayInterval);
-
-  // No direct replacement present for $(find pkg) in ROS2. Edit file path.
-  metricFile.replace(metricFile.find("/install/"), 8, "/src");
-  trajFile.replace(trajFile.find("/install/"), 8, "/src");
 
   auto subOdometry = nh->create_subscription<nav_msgs::msg::Odometry>("/state_estimation", 5, odometryHandler);
 

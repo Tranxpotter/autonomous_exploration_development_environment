@@ -32,6 +32,9 @@ find_package(pcl_ros REQUIRED)
 
 add_executable(visualizationTools src/visualizationTools.cpp)
 ament_target_dependencies(visualizationTools rclcpp rclpy std_msgs sensor_msgs nav_msgs geometry_msgs tf2 tf2_ros tf2_geometry_msgs message_filters pcl_ros pcl_conversions)
+target_compile_definitions(visualizationTools PRIVATE 
+  PKG_DIR="${CMAKE_CURRENT_SOURCE_DIR}/"
+)
 
 install(TARGETS
   visualizationTools
